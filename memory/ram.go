@@ -4,11 +4,11 @@ import (
 	"math/rand"
 )
 
-const addressMax = 65536
+const ramAddressMax = 65536
 
 // RAM inside the console
 type RAM struct {
-	AddressSpace [addressMax]uint8
+	AddressSpace [ramAddressMax]uint8
 
 	// general registers for programming - not part of ram??
 	AF uint8
@@ -66,8 +66,8 @@ type RAM struct {
 	IE   *uint8 // interrupt enable
 }
 
-// Init a new RAM model, pretending we're a GBC
-func Init() *RAM {
+// InitRAM creates a new RAM model, pretending to be a GBC
+func InitRAM() *RAM {
 	// init registers + stack pointer
 	ram := &RAM{
 		AF: 0x11,
@@ -81,7 +81,7 @@ func Init() *RAM {
 		SP: 0xFFFE,
 	}
 	// fill ram with garbage
-	for a := 0; a < addressMax; a++ {
+	for a := 0; a < ramAddressMax; a++ {
 		ram.AddressSpace[a] = uint8(rand.Intn(256))
 	}
 	// init aliases to special places
