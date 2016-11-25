@@ -10,17 +10,18 @@ const ramAddressMax = 65536
 type RAM struct {
 	AddressSpace [ramAddressMax]uint8
 
-	// general registers for programming - not part of ram??
-	AF uint8
-	F  uint8
-	B  uint8
-	C  uint8
-	D  uint8
-	E  uint8
-	H  uint8
-	L  uint8
+	// registers
+	A uint8
+	F uint8
+	B uint8
+	C uint8
+	D uint8
+	E uint8
+	H uint8
+	L uint8
 
 	SP uint16 // stack pointer
+	PC uint16 // program counter
 
 	P1   *uint8 // joypad info
 	SB   *uint8 // serial transfer data
@@ -68,9 +69,9 @@ type RAM struct {
 
 // InitRAM creates a new RAM model, pretending to be a GBC
 func InitRAM() *RAM {
-	// init registers + stack pointer
+	// init registers + stack pointer + program counter
 	ram := &RAM{
-		AF: 0x11,
+		A:  0x11,
 		F:  0xB0,
 		B:  0x00,
 		C:  0x13,
@@ -79,6 +80,7 @@ func InitRAM() *RAM {
 		H:  0x01,
 		L:  0x4D,
 		SP: 0xFFFE,
+		PC: 0x0100,
 	}
 	// fill ram with garbage
 	for a := 0; a < ramAddressMax; a++ {
@@ -166,4 +168,24 @@ func InitRAM() *RAM {
 	*ram.IE = 0x00
 
 	return ram
+}
+
+// BC returns a pointer to the memory location at B<<8|C
+func (ram *RAM) BC() *uint8 {
+	return &ram.AddressSpace[(uint16(ram.B)<<8)|uint16(ram.C)]
+}
+
+// DE returns a pointer to the memory location at D<<8|E
+func (ram *RAM) DE() *uint8 {
+	return &ram.AddressSpace[(uint16(ram.D)<<8)|uint16(ram.E)]
+}
+
+// HL returns a pointer to the memory location at H<<8|L
+func (ram *RAM) HL() *uint8 {
+	return &ram.AddressSpace[(uint16(ram.H)<<8)|uint16(ram.L)]
+}
+
+// LSFirst returns a pointer to the location specified by a byte pair, with the least-significant byte first.
+func (ram *RAM) LSFirst(lsByte uint8, msByte uint8) *uint8 {
+	return &ram.AddressSpace[(uint16(msByte)<<8)|uint16(lsByte)]
 }
