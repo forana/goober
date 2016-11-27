@@ -2,9 +2,31 @@ package memory
 
 import (
 	"math/rand"
+
+	"github.com/forana/goober/debug"
 )
 
 const ramAddressMax = 65536
+
+// Register enum type
+type Register int
+
+// enums for registers
+const (
+	A Register = iota
+	B
+	C
+	D
+	E
+	F
+	H
+	L
+	AF
+	BC
+	DE
+	HL
+	SP
+)
 
 // RAM inside the console
 type RAM struct {
@@ -170,22 +192,31 @@ func InitRAM() *RAM {
 	return ram
 }
 
-// BC returns a pointer to the memory location at B<<8|C
-func (ram *RAM) BC() *uint8 {
-	return &ram.AddressSpace[(uint16(ram.B)<<8)|uint16(ram.C)]
+// Get16 retrieves a 16-bit value comprised from two uint8 pointers.
+func (ram *RAM) Get16(r1 *uint8, r2 *uint8) uint16 {
+	return (uint16(*r1) << 8) | uint16(*r2)
 }
 
-// DE returns a pointer to the memory location at D<<8|E
-func (ram *RAM) DE() *uint8 {
-	return &ram.AddressSpace[(uint16(ram.D)<<8)|uint16(ram.E)]
-}
-
-// HL returns a pointer to the memory location at H<<8|L
-func (ram *RAM) HL() *uint8 {
-	return &ram.AddressSpace[(uint16(ram.H)<<8)|uint16(ram.L)]
-}
-
-// LSFirst returns a pointer to the location specified by a byte pair, with the least-significant byte first.
-func (ram *RAM) LSFirst(lsByte uint8, msByte uint8) *uint8 {
-	return &ram.AddressSpace[(uint16(msByte)<<8)|uint16(lsByte)]
+// Register returns a pointer to an 8-bit Register by enum.
+func (ram *RAM) Register(r Register) *uint8 {
+	switch r {
+	case A:
+		return &ram.A
+	case B:
+		return &ram.B
+	case C:
+		return &ram.C
+	case D:
+		return &ram.D
+	case E:
+		return &ram.E
+	case F:
+		return &ram.F
+	case H:
+		return &ram.H
+	case L:
+		return &ram.L
+	default:
+		return debug.Slop
+	}
 }
