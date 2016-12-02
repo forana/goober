@@ -74,12 +74,12 @@ func Registry() map[uint8]Command {
 	reg[0x6C] = loadCopy(memory.L, memory.H)
 	reg[0x6D] = loadCopy(memory.L, memory.L)
 	reg[0x6E] = loadHLLocationToRegister(memory.L)
-	reg[0x70] = loadRegisterToHLLocation(memory.B)
-	reg[0x71] = loadRegisterToHLLocation(memory.C)
-	reg[0x72] = loadRegisterToHLLocation(memory.D)
-	reg[0x73] = loadRegisterToHLLocation(memory.E)
-	reg[0x74] = loadRegisterToHLLocation(memory.H)
-	reg[0x75] = loadRegisterToHLLocation(memory.L)
+	reg[0x70] = loadRegisterToCompositeLocation(memory.B, memory.H, memory.L)
+	reg[0x71] = loadRegisterToCompositeLocation(memory.C, memory.H, memory.L)
+	reg[0x72] = loadRegisterToCompositeLocation(memory.D, memory.H, memory.L)
+	reg[0x73] = loadRegisterToCompositeLocation(memory.E, memory.H, memory.L)
+	reg[0x74] = loadRegisterToCompositeLocation(memory.H, memory.H, memory.L)
+	reg[0x75] = loadRegisterToCompositeLocation(memory.L, memory.H, memory.L)
 	reg[0x36] = loadImmediateToHL
 
 	return reg

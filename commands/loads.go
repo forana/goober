@@ -22,10 +22,10 @@ func loadCopy(r1 memory.Register, r2 memory.Register) Command {
 	}
 }
 
-// copy register valye to memory location stored in HL
-func loadRegisterToHLLocation(r memory.Register) Command {
+// copy register value to memory location stored in HL
+func loadRegisterToCompositeLocation(r memory.Register, r1 memory.Register, r2 memory.Register) Command {
 	return func(s *state.State) uint {
-		s.RAM.AddressSpace[s.RAM.Get16(&s.RAM.H, &s.RAM.L)] = *(s.RAM.Register(r))
+		s.RAM.AddressSpace[s.RAM.Get16(s.RAM.Register(r1), s.RAM.Register(r2))] = *(s.RAM.Register(r))
 		return 8
 	}
 }
