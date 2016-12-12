@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"unsafe"
-
 	"github.com/forana/goober/memory"
 	"github.com/forana/goober/state"
 )
@@ -10,43 +8,13 @@ import (
 // Command is a thing.
 type Command func(*state.State) uint
 
-func make16(r1 uint8, r2 uint8) uint16 {
-	return (uint16(r1) << 8) | uint16(r2)
-}
-
-func make16LSFirst(r1 uint8, r2 uint8) uint16 {
-	return make16(r2, r1)
-}
-
-func signed(x uint8) int8 {
-	return *(*int8)(unsafe.Pointer(&x))
-}
-
-func unsigned(x int8) uint8 {
-	return *(*uint8)(unsafe.Pointer(&x))
-}
-
-func top(v uint16) uint8 {
-	return uint8(v >> 8)
-}
-
-func bottom(v uint16) uint8 {
-	return uint8(v)
-}
-
-func add8(a uint8, b int) uint8 {
-	return uint8((int(a) + b) % 0x100)
-}
-
-func add16(a uint16, b int) uint16 {
-	return uint16((int(a) + b) % 0x10000)
-}
-
 // Registry maps opcodes to commands.
 func Registry() map[uint8]Command {
 	reg := make(map[uint8]Command)
 
 	reg[0x00] = nop
+
+	// loads
 
 	reg[0x06] = loadImmediateToRegister(memory.B)
 	reg[0x0E] = loadImmediateToRegister(memory.C)
@@ -149,6 +117,27 @@ func Registry() map[uint8]Command {
 	reg[0xC1] = pop16(memory.B, memory.C)
 	reg[0xD1] = pop16(memory.D, memory.E)
 	reg[0xE1] = pop16(memory.H, memory.L)
+
+	// alu
+
+	reg[0x87] = addRegisterToA(memory.A)
+	reg[0x80] = addRegisterToA(memory.B)
+	reg[0x81] = addRegisterToA(memory.C)
+	reg[0x82] = addRegisterToA(memory.D)
+	reg[0x83] = addRegisterToA(memory.E)
+	reg[0x84] = addRegisterToA(memory.H)
+	reg[0x85] = addRegisterToA(memory.L)
+	reg[0x86] = addHLToA
+	reg[0xC6] = addImmediateToA
+	reg[0x8F] = addCarryRegisterToA(memory.A)
+	reg[0x88] = addCarryRegisterToA(memory.B)
+	reg[0x89] = addCarryRegisterToA(memory.C)
+	reg[0x8A] = addCarryRegisterToA(memory.D)
+	reg[0x8B] = addCarryRegisterToA(memory.E)
+	reg[0x8C] = addCarryRegisterToA(memory.H)
+	reg[0x8D] = addCarryRegisterToA(memory.L)
+	reg[0x8E] = addCarryHLToA
+	reg[0xCE] = addCarryImmediateToA
 
 	return reg
 }

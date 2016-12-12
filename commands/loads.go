@@ -143,7 +143,6 @@ func loadHLIntoSP(s *state.State) uint {
 
 // load SP + signed immediate 8-bit value into HL
 func loadSPSignedImmediateOffsetIntoHL(s *state.State) uint {
-	s.RAM.F = 0
 	v := s.Add16Signed(s.RAM.SP, signed(s.Read()))
 	s.RAM.H = top(v)
 	s.RAM.L = bottom(v)

@@ -20,19 +20,29 @@ func (s *State) Read() uint8 {
 	return b
 }
 
-// Add8 adds n to v, setting carry flags appropriately.
-func (s *State) Add8(v uint8, n uint8) uint8 {
-	if uint16(v&0xF)+uint16(n) >= 0x10 {
+// Add8 adds n to v, setting any flags appropriately.
+func (s *State) Add8(v uint8, nums ...uint8) uint8 {
+	n := uint16(0)
+	for i := range nums {
+		n += uint16(i)
+	}
+	s.RAM.F = 0x00
+	if uint16(v&0xF)+n >= 0x10 {
 		s.RAM.F |= flags.H
 	}
-	if uint16(v)+uint16(n) > 0xFF {
+	if uint(v)+uint(n) > 0xFF {
 		s.RAM.F |= flags.C
 	}
-	return uint8((uint16(v) + uint16(n)) & 0xFF)
+	r := uint8((uint16(v) + n) & 0xFF)
+	if r == 0 {
+		s.RAM.F |= flags.Z
+	}
+	return r
 }
 
 // Add16Signed adds signed n to unsigned v, setting carry flags appropriately.
 func (s *State) Add16Signed(v uint16, n int8) uint16 {
+	s.RAM.F = 0x00
 	if int16(v&0xF)+int16(n) >= 0x10 {
 		s.RAM.F |= flags.H
 	}
@@ -40,4 +50,9 @@ func (s *State) Add16Signed(v uint16, n int8) uint16 {
 		s.RAM.F |= flags.C
 	}
 	return uint16(uint(int(v)+int(n)) & 0xFFFF)
+}
+
+// FlagSet checks if the given flag is set.
+func (s *State) FlagSet(flag uint8) bool {
+	return s.RAM.F&flag != 0
 }
