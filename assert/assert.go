@@ -6,13 +6,13 @@ import (
 
 func Equal(t *testing.T, actual interface{}, expected interface{}) {
 	if actual != expected {
-		t.Errorf("Assertion failed: expected %v, got %v", expected, actual)
+		t.Errorf("Assertion failed: expected 0x%X, got 0x%X", expected, actual)
 	}
 }
 
 func NotEqual(t *testing.T, actual interface{}, expected interface{}) {
 	if actual == expected {
-		t.Errorf("Assertion failed: expected anything other than %v", expected)
+		t.Errorf("Assertion failed: expected anything other than 0x%X", expected)
 	}
 }
 

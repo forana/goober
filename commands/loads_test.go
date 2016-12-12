@@ -36,14 +36,14 @@ func TestLoadCopy(t *testing.T) {
 	assert.Equal(t, uint8(0x22), s.RAM.B)
 }
 
-func TestLoadRegisterToHLLocation(t *testing.T) {
+func TestLoadRegisterToCompositeLocation(t *testing.T) {
 	s := newState()
 	s.RAM.H = 0x12
 	s.RAM.L = 0x34
 	s.RAM.Memory[0x1234] = 0xAA
 	s.RAM.A = 0xBB
 	assert.NotEqual(t, uint8(0xBB), s.RAM.Memory[0x1234])
-	loadRegisterToHLLocation(memory.A)(s)
+	loadRegisterToCompositeLocation(memory.H, memory.L, memory.A)(s)
 	assert.Equal(t, uint8(0xBB), s.RAM.Memory[0x1234])
 }
 
@@ -78,4 +78,55 @@ func TestLoadImmediateLocationToA(t *testing.T) {
 	assert.NotEqual(t, uint8(0xBB), s.RAM.A)
 	loadImmediateLocationToA(s)
 	assert.Equal(t, uint8(0xBB), s.RAM.A)
+}
+
+func TestLoadAToImmediateLocation(t *testing.T) {
+	s := newState()
+	s.RAM.A = 0xAA
+	s.ROM.Program[s.RAM.PC] = 0x34
+	s.ROM.Program[s.RAM.PC+1] = 0x12
+	s.RAM.Memory[0x1234] = 0xBB
+	assert.NotEqual(t, uint8(0xAA), s.RAM.Memory[0x1234])
+	loadAToImmediateLocation(s)
+	assert.Equal(t, uint8(0xAA), s.RAM.Memory[0x1234])
+}
+
+func TestLoadOffsetCIntoA(t *testing.T) {
+	s := newState()
+	s.RAM.A = 0xAA
+	s.RAM.C = 0x42
+	s.RAM.Memory[0xFF42] = 0xBB
+	assert.NotEqual(t, uint8(0xBB), s.RAM.A)
+	loadOffsetCIntoA(s)
+	assert.Equal(t, uint8(0xBB), s.RAM.A)
+}
+
+func TestLoadAIntoOffsetC(t *testing.T) {
+	s := newState()
+	s.RAM.A = 0xAA
+	s.RAM.C = 0x42
+	s.RAM.Memory[0xFF42] = 0xBB
+	assert.NotEqual(t, uint8(0xAA), s.RAM.Memory[0xFF42])
+	loadAIntoOffsetC(s)
+	assert.Equal(t, uint8(0xAA), s.RAM.Memory[0xFF42])
+}
+
+func TestLoadOffsetImmediateIntoA(t *testing.T) {
+	s := newState()
+	s.RAM.A = 0xAA
+	s.RAM.Memory[0xFF42] = 0xBB
+	s.ROM.Program[s.RAM.PC] = 0x42
+	assert.NotEqual(t, uint8(0xBB), s.RAM.A)
+	loadOffsetImmediateIntoA(s)
+	assert.Equal(t, uint8(0xBB), s.RAM.A)
+}
+
+func TestLoadAIntoOffsetImmediate(t *testing.T) {
+	s := newState()
+	s.RAM.A = 0xAA
+	s.RAM.Memory[0xFF42] = 0xBB
+	s.ROM.Program[s.RAM.PC] = 0x42
+	assert.NotEqual(t, uint8(0xAA), s.RAM.Memory[0xFF42])
+	loadAIntoOffsetImmediate(s)
+	assert.Equal(t, uint8(0xAA), s.RAM.Memory[0xFF42])
 }
