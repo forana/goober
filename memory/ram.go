@@ -2,8 +2,6 @@ package memory
 
 import (
 	"math/rand"
-
-	"github.com/forana/goober/debug"
 )
 
 const ramAddressMax = 65536
@@ -21,16 +19,11 @@ const (
 	F
 	H
 	L
-	AF
-	BC
-	DE
-	HL
-	SP
 )
 
 // RAM inside the console
 type RAM struct {
-	AddressSpace [ramAddressMax]uint8
+	Memory [ramAddressMax]uint8
 
 	// registers
 	A uint8
@@ -106,52 +99,52 @@ func InitRAM() *RAM {
 	}
 	// fill ram with garbage
 	for a := 0; a < ramAddressMax; a++ {
-		ram.AddressSpace[a] = uint8(rand.Intn(256))
+		ram.Memory[a] = uint8(rand.Intn(256))
 	}
 	// init aliases to special places
-	ram.P1 = &ram.AddressSpace[0xFF00]
-	ram.SB = &ram.AddressSpace[0xFF01]
-	ram.SC = &ram.AddressSpace[0xFF02]
-	ram.DIV = &ram.AddressSpace[0xFF04]
-	ram.TIMA = &ram.AddressSpace[0xFF05]
-	ram.TMA = &ram.AddressSpace[0xFF06]
-	ram.TAC = &ram.AddressSpace[0xFF07]
-	ram.IF = &ram.AddressSpace[0xFF0F]
-	ram.NR10 = &ram.AddressSpace[0xFF10]
-	ram.NR11 = &ram.AddressSpace[0xFF11]
-	ram.NR12 = &ram.AddressSpace[0xFF12]
-	ram.NR13 = &ram.AddressSpace[0xFF13]
-	ram.NR14 = &ram.AddressSpace[0xFF14]
-	ram.NR21 = &ram.AddressSpace[0xFF16]
-	ram.NR22 = &ram.AddressSpace[0xFF17]
-	ram.NR23 = &ram.AddressSpace[0xFF18]
-	ram.NR24 = &ram.AddressSpace[0xFF19]
-	ram.NR30 = &ram.AddressSpace[0xFF1A]
-	ram.NR31 = &ram.AddressSpace[0xFF1B]
-	ram.NR32 = &ram.AddressSpace[0xFF1C]
-	ram.NR33 = &ram.AddressSpace[0xFF1D]
-	ram.NR34 = &ram.AddressSpace[0xFF1E]
-	ram.NR41 = &ram.AddressSpace[0xFF20]
-	ram.NR42 = &ram.AddressSpace[0xFF21]
-	ram.NR43 = &ram.AddressSpace[0xFF22]
-	ram.NR44 = &ram.AddressSpace[0xFF23]
-	ram.NR50 = &ram.AddressSpace[0xFF24]
-	ram.NR51 = &ram.AddressSpace[0xFF25]
-	ram.NR52 = &ram.AddressSpace[0xFF26]
+	ram.P1 = &ram.Memory[0xFF00]
+	ram.SB = &ram.Memory[0xFF01]
+	ram.SC = &ram.Memory[0xFF02]
+	ram.DIV = &ram.Memory[0xFF04]
+	ram.TIMA = &ram.Memory[0xFF05]
+	ram.TMA = &ram.Memory[0xFF06]
+	ram.TAC = &ram.Memory[0xFF07]
+	ram.IF = &ram.Memory[0xFF0F]
+	ram.NR10 = &ram.Memory[0xFF10]
+	ram.NR11 = &ram.Memory[0xFF11]
+	ram.NR12 = &ram.Memory[0xFF12]
+	ram.NR13 = &ram.Memory[0xFF13]
+	ram.NR14 = &ram.Memory[0xFF14]
+	ram.NR21 = &ram.Memory[0xFF16]
+	ram.NR22 = &ram.Memory[0xFF17]
+	ram.NR23 = &ram.Memory[0xFF18]
+	ram.NR24 = &ram.Memory[0xFF19]
+	ram.NR30 = &ram.Memory[0xFF1A]
+	ram.NR31 = &ram.Memory[0xFF1B]
+	ram.NR32 = &ram.Memory[0xFF1C]
+	ram.NR33 = &ram.Memory[0xFF1D]
+	ram.NR34 = &ram.Memory[0xFF1E]
+	ram.NR41 = &ram.Memory[0xFF20]
+	ram.NR42 = &ram.Memory[0xFF21]
+	ram.NR43 = &ram.Memory[0xFF22]
+	ram.NR44 = &ram.Memory[0xFF23]
+	ram.NR50 = &ram.Memory[0xFF24]
+	ram.NR51 = &ram.Memory[0xFF25]
+	ram.NR52 = &ram.Memory[0xFF26]
 	// 0xFF30 - 0xFF3F are wave pattern ram
-	ram.LCDC = &ram.AddressSpace[0xFF40]
-	ram.STAT = &ram.AddressSpace[0xFF41]
-	ram.SCY = &ram.AddressSpace[0xFF42]
-	ram.SCX = &ram.AddressSpace[0xFF43]
-	ram.LY = &ram.AddressSpace[0xFF44]
-	ram.LYC = &ram.AddressSpace[0xFF45]
-	ram.DMA = &ram.AddressSpace[0xFF46]
-	ram.BGP = &ram.AddressSpace[0xFF47]
-	ram.OBP0 = &ram.AddressSpace[0xFF48]
-	ram.OBP1 = &ram.AddressSpace[0xFF49]
-	ram.WY = &ram.AddressSpace[0xFF4A]
-	ram.WX = &ram.AddressSpace[0xFF4B]
-	ram.IE = &ram.AddressSpace[0xFFFF]
+	ram.LCDC = &ram.Memory[0xFF40]
+	ram.STAT = &ram.Memory[0xFF41]
+	ram.SCY = &ram.Memory[0xFF42]
+	ram.SCX = &ram.Memory[0xFF43]
+	ram.LY = &ram.Memory[0xFF44]
+	ram.LYC = &ram.Memory[0xFF45]
+	ram.DMA = &ram.Memory[0xFF46]
+	ram.BGP = &ram.Memory[0xFF47]
+	ram.OBP0 = &ram.Memory[0xFF48]
+	ram.OBP1 = &ram.Memory[0xFF49]
+	ram.WY = &ram.Memory[0xFF4A]
+	ram.WX = &ram.Memory[0xFF4B]
+	ram.IE = &ram.Memory[0xFFFF]
 	// init known special places to known hardware defaults
 	*ram.TIMA = 0x00
 	*ram.TMA = 0x00
@@ -192,11 +185,6 @@ func InitRAM() *RAM {
 	return ram
 }
 
-// Get16 retrieves a 16-bit value comprised from two uint8 pointers.
-func (ram *RAM) Get16(r1 *uint8, r2 *uint8) uint16 {
-	return (uint16(*r1) << 8) | uint16(*r2)
-}
-
 // Register returns a pointer to an 8-bit Register by enum.
 func (ram *RAM) Register(r Register) *uint8 {
 	switch r {
@@ -214,9 +202,8 @@ func (ram *RAM) Register(r Register) *uint8 {
 		return &ram.F
 	case H:
 		return &ram.H
-	case L:
-		return &ram.L
+	//case L:
 	default:
-		return debug.Slop
+		return &ram.L
 	}
 }

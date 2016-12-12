@@ -1,5 +1,9 @@
 package commands
 
 import (
-	_ "github.com/forana/goober/state"
+	"github.com/forana/goober/state"
 )
+
+func nop(state *state.State) uint {
+	return 4
+}
