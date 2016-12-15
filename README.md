@@ -11,8 +11,8 @@ Also, very useful wiki: http://gbdev.gg8.se/wiki
 High-level TODO list:
 
 * Commands:
-  * ~8-bit loads~
-  * ~16-bit loads~
+  * <s>8-bit loads</s>
+  * <s>16-bit loads</s>
   * 8-bit ALU commands
   * 16-bit ALU commands
   * Misc commands
